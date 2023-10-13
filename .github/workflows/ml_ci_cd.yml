@@ -14,6 +14,8 @@ jobs:
     - name: python version
       run: python --version
     - name: pip install
-      run: python install -r requirements.txt
+      run: pip install -r requirements.txt
     - name: train model
       run: python model/train.py
+    - name: docker build
+      run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.sha}} .
