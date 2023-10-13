@@ -3,23 +3,20 @@
 name: Modelops deploy
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   repository_dispatch:
     types: [ml_ci_cd]
 jobs:
   ml_ci_cd:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
     steps:
     - uses: actions/checkout@v2
     - name: python version
       run: python --version
     - name: pip install
-      run: pip install -r requirements.txt
+      run: pip install -r requirements.txt 
     - name: train model
       run: python model/train.py
     - name: docker build
@@ -42,9 +39,6 @@ jobs:
       run: sed -i 's/{github.sha}/${{ github.sha }}/g' manifests/k8s.yml
     - name: show k8s.yml 
       run: cat manifests/k8s.yml
-
-    - name: show k8s.yml 
-      run: cat manifests/k8s.yml
     - uses: okteto/context@2.7.0
       with:
         token: ${{secrets.OKTETO_TOKEN }}
@@ -57,4 +51,3 @@ jobs:
         namespace: ${{secrets.OKTETO_NAMESPACE }}
         manifest: manifests/k8s.yml
         tag: ${{ secrets.DOCKER_USERNAME }}/${{secrets.MODEL_NAME}}:${{ github.sha }}
-
