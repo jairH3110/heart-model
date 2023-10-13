@@ -1,3 +1,5 @@
+
+
 name: Modelops deploy
 on:
   push:
@@ -9,12 +11,15 @@ on:
 jobs:
   ml_ci_cd:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
     steps:
     - uses: actions/checkout@v2
     - name: python version
       run: python --version
     - name: pip install
-      run: pip install -r requirements.txt 
+      run: pip install -r requirements.txt
     - name: train model
       run: python model/train.py
     - name: docker build
@@ -25,8 +30,11 @@ jobs:
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
+    - name: docker build
+      run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.event.client_payload.sha}} .
+    - name: docker login
     - name: docker Push
-      run: docker push ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{ github.sha }}
+      run: docker push ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.event.client_payload.sha }}
     - name: update docker user in k8 
       run: sed -i 's/{docker_user}/${{secrets.DOCKER_USER}}/g' manifests/k8s.yml
     - name: update model name in k8 
@@ -35,6 +43,9 @@ jobs:
       run: sed -i 's/_/-/g' manifests/k8s.yml
     - name: update sha in k8
       run: sed -i 's/{github.sha}/${{ github.sha }}/g' manifests/k8s.yml
+    - name: show k8s.yml 
+      run: cat manifests/k8s.yml
+
     - name: show k8s.yml 
       run: cat manifests/k8s.yml
     - uses: okteto/context@2.7.0
@@ -49,3 +60,5 @@ jobs:
         namespace: ${{secrets.OKTETO_NAMESPACE }}
         manifest: manifests/k8s.yml
         tag: ${{ secrets.DOCKER_USERNAME }}/${{secrets.MODEL_NAME}}:${{ github.sha }}
+    - name: update sha in k8
+      run: sed -i 's/{github.sha}/${{github.event.client_payload.sha }}/g' manifests/k8s.yml
