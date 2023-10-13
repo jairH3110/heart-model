@@ -1,0 +1,15 @@
+name: Modelops deploy
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  repository_dispatch:
+    types: [ml_ci_cd]
+jobs:
+  ml_ci_cd:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: python version
+      run: python --version
