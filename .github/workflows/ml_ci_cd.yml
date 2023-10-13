@@ -60,5 +60,4 @@ jobs:
         namespace: ${{secrets.OKTETO_NAMESPACE }}
         manifest: manifests/k8s.yml
         tag: ${{ secrets.DOCKER_USERNAME }}/${{secrets.MODEL_NAME}}:${{ github.sha }}
-    - name: update sha in k8
-      run: sed -i 's/{github.sha}/${{github.event.client_payload.sha }}/g' manifests/k8s.yml
+  
