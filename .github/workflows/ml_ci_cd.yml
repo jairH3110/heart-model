@@ -54,4 +54,18 @@ jobs:
 # DEPLOY AND WAIT 
 
 
-  
+    - uses: okteto/context@2.7.0
+      with:
+        token: ${{secrets.OKTETO_TOKEN }}
+
+    - name: Deploy and Wait
+      uses: okteto/actions/deploy@v1
+      env:
+        KUBECONFIG: ${{ steps.namespace.outputs.kubeconfig }}
+      with:
+        namespace: ${{secrets.OKTETO_NAMESPACE }}
+        manifest: manifests/k8s.yml
+        tag: ${{ secrets.DOCKER_USERNAME }}/${{secrets.MODEL_NAME}}:${{ github.sha }}
+
+
+    
