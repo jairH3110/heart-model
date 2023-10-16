@@ -18,10 +18,23 @@ jobs:
       run: python --version
     - name: pip install
       run: pip install -r requirements.txt
+# DESCARGA DATASET 
+    - name: download dataset
+      run: wget -O data/heart_disease.csv ${{github.event.client_payload.dataseturl}}
+    - name: cat dataset
+      run: cat data/heart_disease.csv
+
+#EJECUTA EL MODELO 
     - name: train model
       run: python model/train.py
+
+
+
+#DOCKER BUILD
     - name: docker build
-      run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.sha}} .
+      run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.event.client_payload.sha}} .
+   
+   #DOCKER LOGIN AND PUSH
     - name: docker login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
@@ -29,8 +42,9 @@ jobs:
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
     - name: docker Push
-      run: docker push ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{ github.sha }}
-   
+      run: docker push ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{ github.event.client_payload.sha }}
+  
+   # UPDATE K8S SETTINGS 
     - name: update docker user in k8 
       run: sed -i 's/{docker_user}/${{secrets.DOCKER_USER}}/g' manifests/k8s.yml
     - name: update model name in k8 
@@ -42,19 +56,6 @@ jobs:
     - name: show k8s.yml 
       run: cat manifests/k8s.yml
 
-
-      
-    - name: update docker user in k8 
-      run: sed -i 's/{docker_user}/${{secrets.DOCKER_USER}}/g' manifests/k8s.yml
-    - name: update model name in k8 
-      run: sed -i 's/{model_name}/${{secrets.MODEL_NAME}}/g' manifests/k8s.yml
-    - name: update _ by - 
-      run: sed -i 's/_/-/g' manifests/k8s.yml
-    - name: update sha in k8
-      run: sed -i 's/{github.sha}/${{ github.sha }}/g' manifests/k8s.yml
-    - name: show k8s.yml 
-      run: cat manifests/k8s.yml
-     
     - uses: okteto/context@2.7.0
       with:
         token: ${{secrets.OKTETO_TOKEN }}
