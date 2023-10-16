@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: modeloxd-container
-        image: docker.io/{jairdelfin}/{modeloxd}:{github.sha}
+        image: docker.io/{jairdelfin}/tensorflow-{modeloxd}:{github.sha}
         ports:
         - containerPort: 80
 ---
@@ -29,5 +29,5 @@ spec:
   - port: 80
     targetPort: 80
   selector:
-    app: {modeloxd}-server
+    app: modeloxd-server
   type: LoadBalancer
