@@ -20,7 +20,7 @@ jobs:
       run: pip install -r requirements.txt
 # DESCARGA DATASET 
     - name: download dataset
-      run: wget -O data/heart_disease.csv ${{github.event.client_payload.https://firebasestorage.googleapis.com/v0/b/heart-model-97ce6.appspot.com/o/heart-disease%20_100.csv?alt=media&token=9de10195-982a-49cd-b932-2108b65f0edc}}
+      run: wget -O data/heart_disease.csv ${{github.event.client_payload.dataseturl}}
     - name: cat dataset
       run: cat data/heart_disease.csv
 
