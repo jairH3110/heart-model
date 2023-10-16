@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {model_name}-deployment
+  name: modeloxd-deployment
 spec:
   selector:
     matchLabels:
-      app: {model_name}-server
+      app: modeloxd-server
   replicas: 1
   template:
     metadata:
       labels:
-        app: {model_name}-server
+        app: modeloxd-server
     spec:
       containers:
-      - name: {model_name}-container
-        image: docker.io/{jairdelfin}/{model_name}:{github.sha}
+      - name: modeloxd-container
+        image: docker.io/{jairdelfin}/{modeloxd}:{github.sha}
         ports:
         - containerPort: 80
 ---
@@ -22,12 +22,12 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    run: {model_name}-service
-  name: {model_name}-service
+    run: modeloxd-service
+  name: modeloxd-service
 spec:
   ports:
   - port: 80
     targetPort: 80
   selector:
-    app: {model_name}-server
+    app: {modeloxd}-server
   type: LoadBalancer
