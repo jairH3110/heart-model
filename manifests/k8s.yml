@@ -18,7 +18,7 @@ spec:
         #image: gcr.io/tensorflow-serving/resnet 
         image: docker.io/jairdelfin/modeloxd:{github.sha}
         ports:
-        - containerPort: 81
+        - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -28,8 +28,8 @@ metadata:
   name: modeloxd-service
 spec:
   ports:
-  - port: 81
-    targetPort: 81
+  - port: 80
+    targetPort: 80
   selector:
     app: modeloxd-server
   type: LoadBalancer
