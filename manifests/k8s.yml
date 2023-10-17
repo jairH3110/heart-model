@@ -16,7 +16,7 @@ spec:
       containers:
       - name: modeloxd-container
         #image: gcr.io/tensorflow-serving/resnet 
-        image: docker.io/jairdelfin/modeloxd:latest
+        image: docker.io/jairdelfin/modeloxd:{github.sha}
         ports:
         - containerPort: 81
 ---
