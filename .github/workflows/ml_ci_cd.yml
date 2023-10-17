@@ -31,7 +31,7 @@ jobs:
 
 #DOCKER BUILD
     - name: docker build
-      run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.sha}} .
+      run: docker build -t ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{github.event.client_payload.sha}} .
    
    #DOCKER LOGIN AND PUSH
     - name: docker login
@@ -41,7 +41,7 @@ jobs:
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
     - name: docker Push
-      run: docker push ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{ github.sha }}
+      run: docker push ${{secrets.DOCKER_USER}}/${{secrets.MODEL_NAME}}:${{ github.event.client_payload.sha }}
   
    # UPDATE K8S SETTINGS 
     - name: update docker user in k8 
@@ -51,7 +51,7 @@ jobs:
     - name: update _ by - 
       run: sed -i 's/_/-/g' manifests/k8s.yml
     - name: update sha in k8
-      run: sed -i 's/{github.sha}/${{ github.sha }}/g' manifests/k8s.yml
+      run: sed -i 's/{github.sha}/${{ github.event.client_payload.sha }}/g' manifests/k8s.yml
     - name: show k8s.yml 
       run: cat manifests/k8s.yml
 # DEPLOY AND WAIT 
